@@ -1,10 +1,8 @@
 package com.spring.security.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.spring.security.domain.User;
@@ -17,14 +15,9 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 	
-	public List<UserDto> findAll() {		
-		List<User> usersTmp = userRepository.findAll();
-		List<UserDto> usersDto = usersTmp
-				.stream()
-				.map(UserDto::new)
-				.collect(Collectors.toList());
-		
-		return usersDto;
+	public Page<UserDto> findAll(int page, int size) {		
+		Page<User> users = userRepository.findAll(PageRequest.of(page, size));
+		return users.map(UserDto::new);
 	}
 	
 	public UserDto findById(Long id) {
