@@ -2,12 +2,10 @@ package com.spring.security.domain;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 
 import lombok.AllArgsConstructor;
@@ -20,22 +18,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-public class User implements Serializable {
+public class Function implements Serializable {
 	
-	private static final long serialVersionUID = -1330120291666923843L;
+	private static final long serialVersionUID = 4585918616485798177L;
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 	
-	@Column(name = "username")
-	@NotBlank(message = "username cannot be empty")
-	private String username;
+	@NotBlank(message = "description cannot be empty")
+	private String description;
 	
-	@NotBlank(message = "password cannot be empty")
-	private String password;
+	@NotBlank(message = "url cannot be empty")
+	private String url;
 	
-	@ManyToOne
-	Profile profile;
+	@NotBlank(message = "method cannot be empty")
+	private String method;
 	
 }

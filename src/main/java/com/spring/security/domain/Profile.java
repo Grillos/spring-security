@@ -1,13 +1,13 @@
 package com.spring.security.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotBlank;
 
 import lombok.AllArgsConstructor;
@@ -20,22 +20,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-public class User implements Serializable {
+public class Profile implements Serializable {
 	
-	private static final long serialVersionUID = -1330120291666923843L;
+	private static final long serialVersionUID = 4585918616485798177L;
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 	
-	@Column(name = "username")
-	@NotBlank(message = "username cannot be empty")
-	private String username;
+	@NotBlank(message = "description cannot be empty")
+	private String description;
 	
-	@NotBlank(message = "password cannot be empty")
-	private String password;
-	
-	@ManyToOne
-	Profile profile;
-	
+	@ManyToMany
+	List<Function> functions;
 }
