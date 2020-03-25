@@ -1,15 +1,14 @@
 package com.spring.security.service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.spring.security.domain.User;
+import com.spring.security.dto.UserDto;
 import com.spring.security.repository.UserRepository;
 
 @Service
@@ -18,22 +17,24 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 	
-	@Cacheable(cacheNames = "User", key="#root.method.name")
-	public List<User> findAll() {
+	public List<UserDto> findAll() {		
+		List<User> usersTmp = userRepository.findAll();
+		List<UserDto> usersDto = usersTmp
+				.stream()
+				.map(UserDto::new)
+				.collect(Collectors.toList());
 		
-		return userRepository.findAll();
+		return usersDto;
 	}
 	
-	public Optional<User> findById(Long id) {
-		return userRepository.findById(id);
+	public UserDto findById(Long id) {
+		return new UserDto(userRepository.getOne(id));
 	}
 	
-	@CacheEvict(cacheNames = "User", allEntries = true)
-	public void create(User user) {
-		userRepository.save(user);
+	public UserDto create(User user) {
+		return new UserDto(userRepository.save(user));
 	}
 	
-	@CachePut(cacheNames = "User", key="#user.getIdentifier()")
 	public void update(Long id, User user) {
 		userRepository.save(user);
 	}

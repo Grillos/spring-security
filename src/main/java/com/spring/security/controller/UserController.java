@@ -2,6 +2,8 @@ package com.spring.security.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.spring.security.domain.User;
+import com.spring.security.dto.UserDto;
 import com.spring.security.service.UserService;
+import com.sun.istack.NotNull;
 
 @RestController
 @RequestMapping(value = "/v1/users")
@@ -24,24 +29,26 @@ public class UserController {
 	private UserService userService;
 	 
     @GetMapping
-    public List<User> findAll() {
+    public List<UserDto> findAll() {
     	return userService.findAll();
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<User> findById(@PathVariable Long id) {
-    	User user = userService.findById(id).orElse(null);
-    	return (user != null) ? new ResponseEntity<>(user, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<UserDto> findById(@PathVariable @NotNull Long id) {
+    	UserDto userDto = userService.findById(id);
+    	return (userDto != null) ? new ResponseEntity<>(userDto, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody User user) {
-    	userService.create(user);
-    	return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<UserDto> create(@RequestBody @Valid User user, UriComponentsBuilder uri) {
+    	UserDto userDto = userService.create(user);
+    	
+    	return ResponseEntity.created(
+    			uri.path("/users/{id}").buildAndExpand(user.getId()).toUri()).body(userDto);
     }
     
     @PutMapping("/{id}")
-    public void send(@PathVariable Long id, @RequestBody User user) {
+    public void send(@PathVariable Long id, @RequestBody @Valid User user) {
     	userService.update(id, user);
     }
     
