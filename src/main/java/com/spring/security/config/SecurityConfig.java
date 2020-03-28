@@ -1,13 +1,16 @@
 package com.spring.security.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.spring.security.service.AuthenticateService;
@@ -19,6 +22,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	AuthenticateService authenticateService;
 	
+	@Bean
+	@Override
+	protected AuthenticationManager authenticationManager() throws Exception {
+		return super.authenticationManager();
+	}
 	//configure authentication
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -33,9 +41,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.GET, "/users").permitAll()
 			.antMatchers(HttpMethod.GET, "/users/*").permitAll()
 			.antMatchers(HttpMethod.GET, "/h2-console/**").permitAll()
+			.antMatchers(HttpMethod.POST, "/v1/auth").permitAll()
 			.anyRequest().authenticated()
-			.and()
-			.formLogin();
+			.and().csrf().disable()
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
 	
 	//configure statics files(css,js,html etc...)
