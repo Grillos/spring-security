@@ -42,6 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.GET, "/users").permitAll()
 			.antMatchers(HttpMethod.GET, "/users/*").permitAll()
 			.antMatchers(HttpMethod.GET, "/h2-console/**").permitAll()
+			.antMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
 			.antMatchers(HttpMethod.POST, "/v1/auth").permitAll()
 			.anyRequest().authenticated()
 			.and().csrf().disable()
@@ -54,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(WebSecurity web) throws Exception {
 		web
         .ignoring()
-        .antMatchers("/h2-console/**");
+        .antMatchers("/h2-console/**", "/**.html", "/v2/api-docs", "/webjars/**", "/configuration/**", "/swagger-resources/**");		
 	}
 	
 
