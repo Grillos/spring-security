@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.spring.security.domain.User;
 import com.spring.security.repository.UserRepository;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -21,7 +22,7 @@ public class AuthenticateService implements UserDetailsService {
 	
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Value("${jwt.expiration}")
 	private Long JWT_EXPIRATION;
 	
@@ -51,6 +52,21 @@ public class AuthenticateService implements UserDetailsService {
 				.signWith(SignatureAlgorithm.HS256, JWT_SECRET)
 				.compact();
 				
+	}
+	
+	public boolean isTokenValid(String token) {
+		try {
+			Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}		
+	}
+	
+	public User getUserByToken(String token) {
+		Claims claims = Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token).getBody();
+		return userRepository.findById(Long.parseLong(claims.getSubject())).orElseThrow();
+		
 	}
 
 }
