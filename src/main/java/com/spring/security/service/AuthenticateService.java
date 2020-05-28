@@ -54,6 +54,22 @@ public class AuthenticateService implements UserDetailsService {
 				
 	}
 	
+	public String refreshToken(String token) {
+		
+		Claims claims = Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token).getBody();
+		
+		User user = userRepository.findById(Long.parseLong(claims.getSubject())).orElseThrow();
+		
+		return Jwts.builder()
+				.setIssuer(JWT_ISSUER)
+				.setSubject(user.getId().toString())
+				.setIssuedAt(new Date())
+				.setIssuedAt(new Date(new Date().getTime() + JWT_EXPIRATION))
+				.signWith(SignatureAlgorithm.HS256, JWT_SECRET)
+				.compact();
+				
+	}
+	
 	public boolean isTokenValid(String token) {
 		try {
 			Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token);
